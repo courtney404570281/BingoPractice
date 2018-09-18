@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "452529670805",
+    "firebase_url": "https://bingopractice.firebaseio.com",
+    "project_id": "bingopractice",
+    "storage_bucket": "bingopractice.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:452529670805:android:23b55def8ce0f6a3",
+        "android_client_info": {
+          "package_name": "teresa.com.bingopractice"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "452529670805-8h9h2nnu208bdmp7moim8vg0ii3gan30.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "teresa.com.bingopractice",
+            "certificate_hash": "b668a4df5ff3e41d5fc51a0ddc5dd00768913abf"
+          }
+        },
+        {
+          "client_id": "452529670805-2toagmpnq3ui7su6lg4abra4sogtcru3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9ECOFPrv61OwWsTWwJBrtHucQnOn27FQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "452529670805-2toagmpnq3ui7su6lg4abra4sogtcru3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
