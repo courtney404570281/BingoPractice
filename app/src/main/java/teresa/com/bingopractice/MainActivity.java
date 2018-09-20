@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 100;
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             }
         });
 
+        auth = FirebaseAuth.getInstance();
 
     }
 
@@ -45,14 +47,14 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
     protected void onStart() {
         super.onStart();
         //add FireBase Auth
-        FirebaseAuth.getInstance().addAuthStateListener(this);
+        auth.addAuthStateListener(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         // remove FireBase Auth
-        FirebaseAuth.getInstance().removeAuthStateListener(this);
+        auth.removeAuthStateListener(this);
     }
 
     @Override
@@ -70,8 +72,12 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        //sign out
+        switch(id){
+            case R.id.action_settings:
+                return true;
+            case R.id.action_signout:
+                auth.signOut();
         }
 
         return super.onOptionsItemSelected(item);

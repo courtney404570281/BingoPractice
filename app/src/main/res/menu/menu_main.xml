@@ -4,7 +4,10 @@
     tools:context="teresa.com.bingopractice.MainActivity">
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:orderInCategory="101"
+        android:title="@string/action_settings" />
+    <item
+        android:id="@+id/action_signout"
+        android:orderInCategory="101"
+        android:title="Sign Out" />
 </menu>
