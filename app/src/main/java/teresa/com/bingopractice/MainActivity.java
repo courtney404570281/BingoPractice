@@ -1,11 +1,11 @@
 package teresa.com.bingopractice;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.Group;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -26,13 +26,16 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
 
-public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener {
+public class MainActivity extends AppCompatActivity implements FirebaseAuth.AuthStateListener, View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int RC_SIGN_IN = 100;
     private FirebaseAuth auth;
     private TextView nickText;
     private ImageView avatar;
+    private Group groupAvatar;
+    int[] avatars = {R.drawable.avatar_0, R.drawable.avatar_1, R.drawable.avatar_2, R.drawable.avatar_3, R.drawable.avatar_4, R.drawable.avatar_5, R.drawable.avatar_6};
+    private Member member;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,33 +48,60 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                final EditText roomEdit = new EditText(MainActivity.this);
+                roomEdit.setText("Welcome");
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Room name")
+                        .setMessage("Please enter your room name")
+                        .setView(roomEdit)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                String roomName = roomEdit.getText().toString();
+                                Room room = new Room(roomName, member);
+                                FirebaseDatabase.getInstance().getReference("rooms")
+                                        .push().setValue(room);
+                            }
+                        })
+                        .show();
             }
         });
-
         findViews();
         auth = FirebaseAuth.getInstance();
-
     }
 
     private void findViews() {
         nickText = findViewById(R.id.nickname);
         avatar = findViewById(R.id.avatar);
+        groupAvatar = findViewById(R.id.group_avatars);
+        groupAvatar.setVisibility(View.GONE);
+        avatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean visible = groupAvatar.getVisibility() == View.GONE ? false: true;
+                groupAvatar.setVisibility(visible ? View.GONE : View.VISIBLE);
+            }
+        });
+        findViewById(R.id.avatar_0).setOnClickListener(this);
+        findViewById(R.id.avatar_1).setOnClickListener(this);
+        findViewById(R.id.avatar_2).setOnClickListener(this);
+        findViewById(R.id.avatar_3).setOnClickListener(this);
+        findViewById(R.id.avatar_4).setOnClickListener(this);
+        findViewById(R.id.avatar_5).setOnClickListener(this);
+        findViewById(R.id.avatar_6).setOnClickListener(this);
     }
-
 
     @Override
     protected void onStart() {
         super.onStart();
-        //add FireBase Auth
+        // Firebase auth
         auth.addAuthStateListener(this);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        // remove FireBase Auth
+        // remove auth
         auth.removeAuthStateListener(this);
     }
 
@@ -90,14 +120,13 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        //sign out
-        switch(id){
+        switch (id) {
             case R.id.action_settings:
                 return true;
             case R.id.action_signout:
                 auth.signOut();
+                break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -109,7 +138,6 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         if (user != null) {
             final String displayName = user.getDisplayName();
             String uid = user.getUid();
-
             FirebaseDatabase.getInstance()
                     .getReference("users")
                     .child(uid)
@@ -118,16 +146,21 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
             FirebaseDatabase.getInstance()
                     .getReference("users")
                     .child(uid)
+                    .child("uid")
+                    .setValue(uid);
+            FirebaseDatabase.getInstance()
+                    .getReference("users")
+                    .child(uid)
                     .addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            Member member = dataSnapshot.getValue(Member.class);
-                            if (member.getNickname() == null){
+                            member = dataSnapshot.getValue(Member.class);
+                            if (member.getNickname() == null) {
                                 showNicknameDialog(displayName);
                             } else {
                                 nickText.setText(member.getNickname());
                             }
-
+                            avatar.setImageResource(avatars[member.getAvatarId()]);
                         }
 
                         @Override
@@ -135,6 +168,26 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
                         }
                     });
+           /* // get nickname
+            FirebaseDatabase.getInstance()
+                    .getReference("users")
+                    .child(uid)
+                    .child("nickname")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.getValue() != null) {
+                                String nickname = (String) dataSnapshot.getValue();
+                            } else {
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });*/
         } else {
             startActivityForResult(
                     AuthUI.getInstance().createSignInIntentBuilder()
@@ -153,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
         nickEdit.setText(displayName);
         new AlertDialog.Builder(this)
                 .setTitle("Nick name")
-                .setMessage("Please enter your nickname!")
+                .setMessage("Please enter your nick name")
                 .setView(nickEdit)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
@@ -165,7 +218,43 @@ public class MainActivity extends AppCompatActivity implements FirebaseAuth.Auth
                                 .child("nickname")
                                 .setValue(nickname);
                     }
-                }).show();
+                })
+                .show();
+    }
 
+    public void changeNickname(View view){
+        showNicknameDialog(nickText.getText().toString());
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view instanceof ImageView) {
+            int selectedAvatarId = 0;
+            switch(view.getId()) {
+                case R.id.avatar_1:
+                    selectedAvatarId = 1;
+                    break;
+                case R.id.avatar_2:
+                    selectedAvatarId = 2;
+                    break;
+                case R.id.avatar_3:
+                    selectedAvatarId = 3;
+                    break;
+                case R.id.avatar_4:
+                    selectedAvatarId = 4;
+                    break;
+                case R.id.avatar_5:
+                    selectedAvatarId = 5;
+                    break;
+                case R.id.avatar_6:
+                    selectedAvatarId = 6;
+                    break;
+            }
+            FirebaseDatabase.getInstance().getReference("users")
+                    .child(auth.getCurrentUser().getUid())
+                    .child("avatarId")
+                    .setValue(selectedAvatarId);
+            groupAvatar.setVisibility(View.GONE);
+        }
     }
 }

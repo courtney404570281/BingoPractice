@@ -4,7 +4,7 @@ public class Member {
     String displayName;
     String nickname;
     String uid;
-    int avatar;
+    int avatarId;
 
     public String getDisplayName() {
         return displayName;
@@ -30,11 +30,11 @@ public class Member {
         this.uid = uid;
     }
 
-    public int getAvatar() {
-        return avatar;
+    public int getAvatarId() {
+        return avatarId;
     }
 
-    public void setAvatar(int avatar) {
-        this.avatar = avatar;
+    public void setAvatarId(int avatarId) {
+        this.avatarId = avatarId;
     }
 }
